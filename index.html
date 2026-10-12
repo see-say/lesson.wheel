@@ -3,721 +3,816 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🎡 Spin the Wheel - Saved Edition</title>
+<title>🎡 Spin The Wheel — Photo Picker</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎡</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Baloo+2:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;900&display=swap');
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    min-height: 100vh;
-    font-family: 'Nunito', sans-serif;
-    overflow-x: hidden;
-    position: relative;
-    padding: 20px;
-    color: white;
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:'Baloo 2','Segoe UI',cursive,sans-serif;
+    min-height:100vh;overflow-x:hidden;color:#fff;
+    background:linear-gradient(-45deg,#ff6b6b,#f06595,#845ef7,#22b8cf,#20c997,#fab005,#ff922b);
+    background-size:400% 400%;animation:bgMove 20s ease infinite;
   }
-  .bg-layer { position: fixed; inset: 0; z-index: 0; overflow: hidden; }
-  .bg-gradient {
-    position: absolute; inset: 0;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%);
-    background-size: 400% 400%;
-    animation: gradientShift 15s ease infinite;
-  }
-  @keyframes gradientShift { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
-  .aurora { position: absolute; inset: 0; opacity: 0.5; filter: blur(60px); }
-  .aurora-wave {
-    position: absolute; width: 200%; height: 200%; top: -50%; left: -50%; border-radius: 50%;
-    animation: auroraMove 20s ease-in-out infinite;
-  }
-  .aurora-wave:nth-child(1) { background: radial-gradient(ellipse, #ff6b9d 0%, transparent 70%); }
-  .aurora-wave:nth-child(2) { background: radial-gradient(ellipse, #4d96ff 0%, transparent 70%); animation-delay: -5s; animation-duration: 25s; }
-  .aurora-wave:nth-child(3) { background: radial-gradient(ellipse, #ffd93d 0%, transparent 70%); animation-delay: -10s; animation-duration: 30s; }
-  .aurora-wave:nth-child(4) { background: radial-gradient(ellipse, #6bcb77 0%, transparent 70%); animation-delay: -15s; animation-duration: 22s; }
-  @keyframes auroraMove {
-    0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); }
-    25% { transform: translate(10%, 10%) rotate(90deg) scale(1.1); }
-    50% { transform: translate(-5%, 15%) rotate(180deg) scale(0.9); }
-    75% { transform: translate(-10%, -5%) rotate(270deg) scale(1.05); }
-  }
-  .floating-emoji { position: absolute; font-size: 2rem; opacity: 0.6; animation: floatEmoji linear infinite; pointer-events: none; user-select: none; }
-  @keyframes floatEmoji {
-    0% { transform: translateY(110vh) rotate(0deg) scale(0.5); opacity: 0; }
-    10%, 90% { opacity: 0.7; }
-    100% { transform: translateY(-10vh) rotate(360deg) scale(1.2); opacity: 0; }
-  }
-  .particle { position: absolute; width: 4px; height: 4px; background: white; border-radius: 50%; box-shadow: 0 0 10px white; animation: twinkle 3s ease-in-out infinite; }
-  @keyframes twinkle { 0%, 100% { opacity: 0.2; transform: scale(1); } 50% { opacity: 1; transform: scale(1.5); } }
-  .geo-shape { position: absolute; border: 3px solid rgba(255,255,255,0.2); animation: geoFloat 20s ease-in-out infinite; pointer-events: none; }
-  @keyframes geoFloat { 0%, 100% { transform: translate(0, 0) rotate(0deg); } 50% { transform: translate(50px, -50px) rotate(180deg); } }
-  .title {
-    font-family: 'Fredoka One', cursive; font-size: clamp(2rem, 6vw, 3.5rem); color: white;
-    text-shadow: 3px 3px 0 rgba(0,0,0,0.3), 0 0 30px rgba(255,255,255,0.5);
-    margin-bottom: 5px; z-index: 2; text-align: center; animation: titleBounce 2.5s ease-in-out infinite; letter-spacing: 2px; position: relative;
-  }
-  @keyframes titleBounce { 0%, 100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-8px) rotate(1deg); } }
-  .subtitle { font-size: clamp(0.9rem, 2.5vw, 1.2rem); color: rgba(255,255,255,0.95); margin-bottom: 25px; z-index: 2; text-align: center; font-weight: 700; text-shadow: 1px 1px 3px rgba(0,0,0,0.3); position: relative; }
-  .sound-toggle {
-    position: fixed; top: 20px; right: 20px; z-index: 50; background: rgba(255,255,255,0.2); backdrop-filter: blur(15px);
-    border: 2px solid rgba(255,255,255,0.3); border-radius: 50px; padding: 10px 18px; color: white;
-    font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1rem; cursor: pointer;
-    display: flex; align-items: center; gap: 8px; transition: all 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-  }
-  .sound-toggle:hover { background: rgba(255,255,255,0.3); transform: scale(1.05); }
-  .sound-toggle.muted { opacity: 0.6; }
-  .app-container { display: flex; flex-wrap: wrap; gap: 30px; justify-content: center; align-items: flex-start; max-width: 1400px; margin: 0 auto; position: relative; z-index: 2; }
-  .wheel-section { display: flex; flex-direction: column; align-items: center; flex: 1; min-width: 320px; }
-  .wheel-wrapper { position: relative; width: min(450px, 90vw); height: min(450px, 90vw); }
-  .wheel-glow {
-    position: absolute; inset: -20px; border-radius: 50%;
-    background: conic-gradient(from 0deg, #ff6b6b, #ffd93d, #6bcb77, #4d96ff, #c084fc, #ff6b6b);
-    animation: glowRotate 5s linear infinite; filter: blur(15px); opacity: 0.8; z-index: 0;
-  }
-  @keyframes glowRotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-  .wheel-border {
-    position: absolute; inset: -10px; border-radius: 50%;
-    background: linear-gradient(135deg, #ffd700, #ff8c00, #ffd700, #ff8c00, #ffd700);
-    background-size: 200% 200%; animation: goldShine 3s ease infinite; z-index: 1;
-    box-shadow: 0 0 40px rgba(255, 215, 0, 0.6), inset 0 0 20px rgba(0,0,0,0.2);
-  }
-  @keyframes goldShine { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
-  .wheel-border-inner { position: absolute; inset: 0; border-radius: 50%; background: #1a0f3d; z-index: 2; box-shadow: inset 0 0 30px rgba(0,0,0,0.5); }
-  canvas#wheel { position: absolute; inset: 5px; width: calc(100% - 10px); height: calc(100% - 10px); border-radius: 50%; z-index: 3; }
-  .center-btn {
-    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    width: 95px; height: 95px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #ff6b6b, #c0392b);
-    border: 4px solid #ffd700; color: white; font-family: 'Fredoka One', cursive; font-size: 1.1rem; cursor: pointer; z-index: 10;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.4), inset 0 3px 8px rgba(255,255,255,0.3); transition: transform 0.2s, box-shadow 0.2s;
-    display: flex; align-items: center; justify-content: center; text-align: center; line-height: 1.1; letter-spacing: 1px;
-  }
-  .center-btn:hover:not(.spinning) { transform: translate(-50%, -50%) scale(1.12); box-shadow: 0 8px 30px rgba(255,107,107,0.7); }
-  .center-btn:active:not(.spinning) { transform: translate(-50%, -50%) scale(0.95); }
-  .center-btn.spinning { pointer-events: none; opacity: 0.8; animation: pulse 0.5s ease-in-out infinite; }
-  @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(255,107,107,0.7); } 50% { box-shadow: 0 0 0 20px rgba(255,107,107,0); } }
-  .pointer { position: absolute; top: -30px; left: 50%; transform: translateX(-50%); z-index: 15; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5)); }
-  .pointer svg { width: 55px; height: 60px; }
-  .dot {
-    position: absolute; width: 14px; height: 14px; border-radius: 50%; background: #ffd700; z-index: 5;
-    box-shadow: 0 0 10px rgba(255, 215, 0, 0.9), inset 0 -2px 4px rgba(0,0,0,0.3); animation: dotPulse 1.5s ease-in-out infinite;
-  }
-  @keyframes dotPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
-  .control-panel {
-    flex: 1; min-width: 320px; max-width: 480px; background: rgba(255,255,255,0.12); backdrop-filter: blur(20px);
-    border-radius: 25px; padding: 25px; border: 2px solid rgba(255,255,255,0.25); box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-    max-height: 85vh; overflow-y: auto;
-  }
-  .control-panel::-webkit-scrollbar { width: 8px; }
-  .control-panel::-webkit-scrollbar-track { background: rgba(255,255,255,0.1); border-radius: 10px; }
-  .control-panel::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.4); border-radius: 10px; }
-  .panel-header { font-family: 'Fredoka One', cursive; font-size: 1.6rem; color: white; text-align: center; margin-bottom: 20px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
-  .panel-header span { display: block; font-family: 'Nunito', sans-serif; font-size: 0.85rem; font-weight: 700; opacity: 0.9; margin-top: 5px; }
-  .segment-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
-  .segment-card {
-    background: rgba(255,255,255,0.95); border-radius: 16px; padding: 14px; display: flex; align-items: center; gap: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.15); transition: transform 0.2s; animation: cardSlide 0.4s ease-out;
-  }
-  @keyframes cardSlide { from { opacity: 0; transform: translateX(-30px); } to { opacity: 1; transform: translateX(0); } }
-  .segment-card:hover { transform: translateY(-2px); }
-  .seg-number { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 900; font-size: 0.9rem; flex-shrink: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
-  .seg-image-preview { width: 55px; height: 55px; border-radius: 12px; object-fit: cover; border: 3px solid #eee; flex-shrink: 0; cursor: pointer; transition: transform 0.2s; background: #f0f0f0; }
-  .seg-image-preview:hover { transform: scale(1.1); }
-  .seg-image-preview.no-image { display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: #999; border: 3px dashed #ccc; background: #fafafa; }
-  .seg-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
-  .seg-label-input { width: 100%; padding: 6px 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.9rem; outline: none; transition: border-color 0.2s; }
-  .seg-label-input:focus { border-color: #667eea; }
-  .seg-actions { display: flex; gap: 6px; flex-shrink: 0; }
-  .icon-btn { width: 36px; height: 36px; border-radius: 10px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
-  .icon-btn:hover { transform: translateY(-2px); }
-  .btn-upload { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
-  .btn-color { background: linear-gradient(135deg, #ffd93d, #ff8c00); color: white; position: relative; overflow: hidden; }
-  .btn-color input[type="color"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
-  .btn-delete { background: linear-gradient(135deg, #ff6b6b, #ee5a24); color: white; }
-  .action-buttons { display: flex; gap: 10px; margin-top: 15px; }
-  .add-segment-btn, .reset-btn {
-    flex: 1; padding: 14px; border-radius: 16px; font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1rem;
-    cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; border: none;
-  }
-  .add-segment-btn { border: 3px dashed rgba(255,255,255,0.5); background: rgba(255,255,255,0.1); color: white; }
-  .add-segment-btn:hover { background: rgba(255,255,255,0.2); border-color: white; transform: translateY(-2px); }
-  .add-segment-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-  .reset-btn { background: rgba(255, 107, 107, 0.2); color: #ffcccc; border: 2px solid rgba(255, 107, 107, 0.5); }
-  .reset-btn:hover { background: rgba(255, 107, 107, 0.4); color: white; transform: translateY(-2px); }
-  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 100; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
-  .modal-overlay.show { display: flex; animation: fadeIn 0.3s ease; }
-  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-  .modal {
-    background: linear-gradient(135deg, #fff 0%, #f0f0ff 100%); border-radius: 30px; padding: 35px 40px; text-align: center;
-    max-width: 480px; width: 90%; box-shadow: 0 25px 80px rgba(0,0,0,0.5); animation: modalPop 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55); position: relative; overflow: hidden;
-  }
-  .modal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 8px; background: linear-gradient(90deg, #ff6b6b, #ffd93d, #6bcb77, #4d96ff, #c084fc); }
-  @keyframes modalPop { from { transform: scale(0.3) rotate(-15deg); opacity: 0; } to { transform: scale(1) rotate(0); opacity: 1; } }
-  .modal h2 { font-family: 'Fredoka One', cursive; font-size: 2.2rem; background: linear-gradient(135deg, #ff6b6b, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 10px; }
-  .modal .winner-text { font-size: 1.4rem; color: #333; margin-bottom: 15px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; }
-  .modal .winner-image {
-    width: 220px; height: 220px; border-radius: 20px; object-fit: cover; border: 5px solid #ffd700;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.25); margin: 10px auto; display: block; animation: winnerBounce 0.8s ease-out; cursor: zoom-in; transition: transform 0.3s;
-  }
-  .modal .winner-image:hover { transform: scale(1.05); }
-  @keyframes winnerBounce { 0% { transform: scale(0) rotate(-180deg); } 60% { transform: scale(1.1) rotate(10deg); } 100% { transform: scale(1) rotate(0); } }
-  .modal .close-btn {
-    background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 14px 45px; border-radius: 50px;
-    font-size: 1.1rem; font-family: 'Nunito', sans-serif; font-weight: 900; cursor: pointer; margin-top: 15px;
-    transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5); letter-spacing: 1px;
-  }
-  .modal .close-btn:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 10px 30px rgba(102, 126, 234, 0.7); }
-  .zoom-viewer { display: none; position: fixed; inset: 0; background: radial-gradient(ellipse at center, #1a0f3d 0%, #000 100%); z-index: 200; align-items: center; justify-content: center; overflow: hidden; }
-  .zoom-viewer.show { display: flex; animation: zoomFadeIn 0.4s ease; }
-  @keyframes zoomFadeIn { from { opacity: 0; } to { opacity: 1; } }
-  .zoom-image-container { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-  .zoom-viewer img {
-    max-width: 98vw; max-height: 95vh; object-fit: contain; border-radius: 12px;
-    box-shadow: 0 30px 100px rgba(0,0,0,0.9), 0 0 80px rgba(255,215,0,0.3);
-    transition: transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94); transform-origin: center center; cursor: grab; user-select: none; -webkit-user-drag: none;
-  }
-  .zoom-viewer img:active { cursor: grabbing; }
-  .zoom-close {
-    position: fixed; top: 20px; right: 20px; width: 55px; height: 55px; border-radius: 50%; border: none;
-    background: rgba(255,255,255,0.15); backdrop-filter: blur(15px); color: white; font-size: 1.6rem; cursor: pointer; z-index: 202;
-    transition: all 0.3s; border: 2px solid rgba(255,255,255,0.3); display: flex; align-items: center; justify-content: center;
-  }
-  .zoom-close:hover { background: rgba(255,107,107,0.9); transform: rotate(90deg) scale(1.1); border-color: white; }
-  .zoom-controls {
-    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); display: flex; gap: 12px;
-    background: rgba(255,255,255,0.15); backdrop-filter: blur(20px); padding: 14px 24px; border-radius: 60px;
-    border: 2px solid rgba(255,255,255,0.3); z-index: 201; box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-  }
-  .zoom-btn {
-    width: 50px; height: 50px; border-radius: 50%; border: none; background: rgba(255,255,255,0.95); color: #333;
-    font-size: 1.4rem; font-weight: 900; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-  }
-  .zoom-btn:hover { background: white; transform: translateY(-3px) scale(1.1); box-shadow: 0 6px 20px rgba(0,0,0,0.4); }
-  .zoom-btn:active { transform: translateY(0) scale(0.95); }
-  .zoom-info {
-    position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: rgba(255,255,255,0.15);
-    backdrop-filter: blur(15px); padding: 12px 24px; border-radius: 50px; color: white; font-weight: 900; font-size: 1rem;
-    z-index: 201; border: 2px solid rgba(255,255,255,0.3); box-shadow: 0 4px 15px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 10px;
-  }
-  .zoom-level-badge { background: rgba(255,215,0,0.9); color: #333; padding: 4px 12px; border-radius: 20px; font-weight: 900; }
-  .emotion-burst { position: fixed; pointer-events: none; z-index: 150; font-size: 3rem; animation: emotionFly 2s ease-out forwards; }
-  @keyframes emotionFly { 0% { transform: translate(0, 0) scale(0) rotate(0deg); opacity: 1; } 50% { opacity: 1; } 100% { transform: translate(var(--dx), var(--dy)) scale(1.5) rotate(var(--rot)); opacity: 0; } }
-  .confetti-container { position: fixed; inset: 0; pointer-events: none; z-index: 99; overflow: hidden; }
-  .confetti-piece { position: absolute; top: -20px; opacity: 0; }
-  @keyframes confettiFall { 0% { top: -20px; opacity: 1; transform: rotate(0deg) translateX(0); } 100% { top: 110vh; opacity: 0; transform: rotate(720deg) translateX(var(--drift)); } }
-  .toast {
-    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px);
-    background: linear-gradient(135deg, #6bcb77, #4d96ff); color: white; padding: 14px 28px; border-radius: 50px;
-    font-weight: 900; font-size: 1rem; box-shadow: 0 8px 25px rgba(0,0,0,0.3); z-index: 200; opacity: 0;
-    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); pointer-events: none;
-  }
-  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-  .celebration-emoji { position: fixed; font-size: 4rem; pointer-events: none; z-index: 140; animation: celebrateBounce 1s ease-out forwards; }
-  @keyframes celebrateBounce { 0% { transform: scale(0) rotate(-180deg); opacity: 0; } 50% { transform: scale(1.3) rotate(10deg); opacity: 1; } 100% { transform: scale(1) rotate(0deg); opacity: 0; } }
-  @media (max-width: 768px) {
-    .app-container { flex-direction: column; align-items: center; }
-    .control-panel { max-width: 100%; max-height: none; }
-    .center-btn { width: 75px; height: 75px; font-size: 0.9rem; }
-    .modal { padding: 25px 20px; }
-    .modal h2 { font-size: 1.7rem; }
-    .modal .winner-image { width: 170px; height: 170px; }
-    .sound-toggle { top: 10px; right: 10px; padding: 8px 14px; font-size: 0.9rem; }
-    .zoom-controls { bottom: 20px; padding: 10px 16px; gap: 8px; }
-    .zoom-btn { width: 44px; height: 44px; font-size: 1.2rem; }
-    .zoom-info { font-size: 0.85rem; padding: 10px 18px; }
-  }
+  @keyframes bgMove{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+  .bubble{position:fixed;bottom:-160px;border-radius:50%;pointer-events:none;z-index:0;filter:blur(.5px);
+    background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.5),rgba(255,255,255,.06));
+    animation:rise linear infinite}
+  @keyframes rise{to{transform:translateY(-135vh) rotate(40deg)}}
+  header{position:relative;z-index:2;text-align:center;padding:26px 12px 4px}
+  h1{font-family:'Luckiest Guy',cursive;font-size:clamp(2.1rem,6vw,3.6rem);letter-spacing:3px;color:#fff;
+     filter:drop-shadow(0 3px 0 rgba(0,0,0,.18)) drop-shadow(0 10px 22px rgba(0,0,0,.3));
+     animation:bob 3s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+  .wheelEmoji{display:inline-block;animation:spinSlow 6s linear infinite}
+  @keyframes spinSlow{to{transform:rotate(360deg)}}
+  header p{font-weight:700;font-size:1.05rem;text-shadow:0 2px 6px rgba(0,0,0,.3)}
+  main{position:relative;z-index:2;display:flex;justify-content:center;align-items:flex-start;
+       gap:34px;flex-wrap:wrap;padding:26px 16px 60px}
+  .wheel-area{display:flex;flex-direction:column;align-items:center}
+  .wheel-container{position:relative;width:min(88vw,500px);aspect-ratio:1;margin-top:28px;
+    filter:drop-shadow(0 18px 34px rgba(0,0,0,.35))}
+  #wheel{width:100%;height:100%;display:block;cursor:pointer}
+  #pointer{position:absolute;top:-6px;left:50%;transform:translateX(-50%);z-index:6;width:0;height:0;
+    border-left:min(3.4vw,16px) solid transparent;border-right:min(3.4vw,16px) solid transparent;
+    border-top:min(6.8vw,34px) solid #ff3b5c;transform-origin:50% 0;
+    filter:drop-shadow(0 4px 5px rgba(0,0,0,.4))}
+  #pointer.kick{animation:kick .12s ease}
+  @keyframes kick{0%,100%{transform:translateX(-50%)}45%{transform:translateX(-50%) rotate(-16deg)}}
+  .hub{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:21%;aspect-ratio:1;
+    border-radius:50%;z-index:5;cursor:pointer;user-select:none;
+    background:radial-gradient(circle at 32% 28%,#fff8e1,#ffd43b 55%,#f08c00);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Luckiest Guy',cursive;font-size:clamp(.85rem,2.4vw,1.35rem);color:#8a4b00;letter-spacing:1px;
+    box-shadow:0 5px 14px rgba(0,0,0,.4),inset 0 -5px 10px rgba(140,70,0,.35),inset 0 4px 6px rgba(255,255,255,.7);
+    transition:transform .15s}
+  .hub:hover{transform:translate(-50%,-50%) scale(1.08)}
+  .hub:active{transform:translate(-50%,-50%) scale(.92)}
+  .spin-btn{margin-top:32px;font-family:'Luckiest Guy',cursive;font-size:clamp(1.2rem,3vw,1.7rem);
+    letter-spacing:2px;color:#fff;padding:15px 48px;border:none;border-radius:999px;cursor:pointer;
+    background:linear-gradient(180deg,#ff7aa2,#e63e80 55%,#d6336c);
+    box-shadow:0 7px 0 #a61e4d,0 16px 30px rgba(0,0,0,.35);
+    transition:transform .12s,box-shadow .12s;animation:btnGlow 2.4s ease-in-out infinite}
+  .spin-btn:hover:not(:disabled){transform:translateY(-2px)}
+  .spin-btn:active:not(:disabled){transform:translateY(4px);box-shadow:0 3px 0 #a61e4d,0 8px 18px rgba(0,0,0,.3)}
+  .spin-btn:disabled{filter:grayscale(.7) brightness(.85);cursor:not-allowed;animation:none}
+  @keyframes btnGlow{0%,100%{box-shadow:0 7px 0 #a61e4d,0 16px 30px rgba(0,0,0,.35)}
+    50%{box-shadow:0 7px 0 #a61e4d,0 16px 46px rgba(255,255,255,.4)}}
+  .panel{width:min(92vw,370px);background:rgba(255,255,255,.15);
+    backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+    border:2px solid rgba(255,255,255,.35);border-radius:26px;padding:22px;
+    box-shadow:0 16px 44px rgba(0,0,0,.28);transition:.2s}
+  .panel.drag{background:rgba(255,255,255,.32);transform:scale(1.02);border-color:#ffd43b}
+  .panel h2{font-family:'Luckiest Guy',cursive;letter-spacing:1.5px;font-size:1.5rem;margin-bottom:6px;
+    text-shadow:0 2px 5px rgba(0,0,0,.25)}
+  .hint{font-size:.86rem;font-weight:600;opacity:.95;margin-bottom:14px;line-height:1.4}
+  .player{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.22);
+    border:1px solid rgba(255,255,255,.3);border-radius:16px;padding:8px 10px;margin-bottom:10px;
+    transition:transform .15s,background .15s}
+  .player:hover{transform:translateX(5px);background:rgba(255,255,255,.3)}
+  .player .pic{position:relative;flex-shrink:0}
+  .player img{width:48px;height:48px;border-radius:50%;object-fit:cover;object-position:50% 28%;
+    border:3px solid #fff;cursor:zoom-in;box-shadow:0 3px 8px rgba(0,0,0,.3);transition:transform .15s;display:block}
+  .player img:hover{transform:scale(1.12) rotate(-4deg)}
+  .player .pic::after{content:'🔍';position:absolute;bottom:-4px;right:-4px;font-size:.62rem;
+    background:rgba(30,0,50,.75);border-radius:50%;width:17px;height:17px;display:flex;
+    align-items:center;justify-content:center;pointer-events:none}
+  .player input{flex:1;min-width:0;background:transparent;border:none;color:#fff;font-family:inherit;
+    font-weight:700;font-size:1rem;padding:3px 2px;outline:none;
+    border-bottom:2px dashed rgba(255,255,255,.55)}
+  .player input::placeholder{color:rgba(255,255,255,.65)}
+  .player input:focus{border-bottom-color:#ffd43b}
+  .del{width:28px;height:28px;flex-shrink:0;border:none;border-radius:50%;background:rgba(255,255,255,.25);
+    color:#fff;font-weight:800;cursor:pointer;font-size:.85rem;transition:.15s}
+  .del:hover{background:#e03131;transform:scale(1.12)}
+  .btn-row{display:flex;gap:8px;margin-top:4px}
+  .add-btn{flex:1;padding:12px 6px;border:2px dashed rgba(255,255,255,.6);border-radius:16px;
+    background:transparent;color:#fff;font-family:inherit;font-weight:800;font-size:.92rem;cursor:pointer;transition:.15s}
+  .add-btn:hover{background:rgba(255,255,255,.2);border-color:#fff}
+  .export-btn{width:100%;margin-top:8px;padding:12px 6px;border:none;border-radius:16px;
+    background:linear-gradient(180deg,#ffd43b,#f59f00);color:#7a4b00;font-family:inherit;
+    font-weight:800;font-size:.95rem;cursor:pointer;transition:.15s;box-shadow:0 3px 0 #b37400}
+  .export-btn:hover{transform:translateY(-2px)}
+  .clear-btn{width:100%;margin-top:8px;padding:4px;border:none;background:transparent;color:rgba(255,255,255,.7);
+    font-family:inherit;font-weight:700;font-size:.78rem;cursor:pointer;text-decoration:underline}
+  .clear-btn:hover{color:#fff}
+  .saved-note{font-size:.72rem;font-weight:700;opacity:.75;text-align:center;margin-top:6px}
+  .modal{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;
+    background:rgba(30,0,50,.55);backdrop-filter:blur(7px);transition:opacity .3s;padding:16px}
+  .modal.hidden{opacity:0;pointer-events:none}
+  .modal-card{background:linear-gradient(165deg,#fffdf5,#ffeef6);border-radius:30px;padding:30px 38px 28px;
+    text-align:center;max-width:92vw;
+    box-shadow:0 30px 90px rgba(0,0,0,.5),inset 0 0 0 6px rgba(255,212,59,.5);
+    animation:pop .55s cubic-bezier(.2,1.7,.45,1)}
+  @keyframes pop{from{transform:scale(.3) rotate(-8deg);opacity:0}}
+  .modal-card h2{font-family:'Luckiest Guy',cursive;font-size:clamp(1.7rem,5vw,2.4rem);letter-spacing:2px;
+    background:linear-gradient(90deg,#e8590c,#d6336c,#7048e8);
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .winner-pic{display:inline-block;position:relative;cursor:zoom-in}
+  #winnerImg{width:min(46vw,160px);aspect-ratio:1;border-radius:50%;object-fit:cover;object-position:50% 28%;
+    border:6px solid #ffd43b;margin:16px 0 10px;display:block;
+    box-shadow:0 0 0 5px rgba(255,212,59,.35),0 14px 34px rgba(0,0,0,.3);
+    animation:winnerBob 1.6s ease-in-out infinite}
+  @keyframes winnerBob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-8px) rotate(2deg)}}
+  .winner-pic::after{content:'🔍 Click to enlarge';position:absolute;left:50%;bottom:-8px;transform:translateX(-50%);
+    background:rgba(30,0,50,.85);color:#fff;font-size:.7rem;font-weight:800;padding:3px 10px;
+    border-radius:999px;white-space:nowrap;pointer-events:none;opacity:.9}
+  #winnerName{font-size:1.5rem;font-weight:800;color:#7048e8}
+  .modal-sub{font-weight:700;color:#c2255c;margin-top:2px}
+  .modal-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:20px}
+  .modal-actions button{font-family:inherit;font-weight:800;font-size:1rem;padding:11px 20px;
+    border-radius:999px;cursor:pointer;transition:.15s}
+  #againBtn{border:none;background:linear-gradient(180deg,#ff7aa2,#d6336c);color:#fff;box-shadow:0 4px 0 #a61e4d}
+  #againBtn:hover{transform:translateY(-2px)}
+  #removeBtn{background:rgba(112,72,232,.1);color:#7048e8;border:2px solid #7048e8}
+  #removeBtn:hover{background:#7048e8;color:#fff}
+  .lightbox{position:fixed;inset:0;z-index:70;display:flex;flex-direction:column;
+    background:rgba(8,0,22,.93);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+    opacity:1;transition:opacity .25s}
+  .lightbox.hidden{opacity:0;pointer-events:none}
+  .lb-top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
+    padding:12px 16px;z-index:2}
+  .lb-name{font-family:'Luckiest Guy',cursive;letter-spacing:1.5px;font-size:1.15rem;
+    text-shadow:0 2px 6px rgba(0,0,0,.5);padding-left:4px}
+  .lb-tools{display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.1);
+    border:1px solid rgba(255,255,255,.22);border-radius:999px;padding:6px 9px;flex-wrap:wrap}
+  .lb-tools button{height:38px;min-width:38px;border:none;border-radius:999px;padding:0 10px;
+    background:rgba(255,255,255,.16);color:#fff;font-family:inherit;font-weight:800;
+    font-size:1.05rem;cursor:pointer;transition:.15s;display:flex;align-items:center;justify-content:center;gap:5px}
+  .lb-tools button:hover{background:rgba(255,255,255,.35);transform:scale(1.08)}
+  .lb-tools button:active{transform:scale(.92)}
+  #lbZoomLevel{min-width:56px;text-align:center;font-weight:800;font-size:.95rem;user-select:none}
+  #lbClose{background:#e03131 !important}
+  #lbClose:hover{background:#ff6b6b !important}
+  .lb-hint{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);z-index:2;
+    background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:999px;
+    padding:6px 16px;font-size:.8rem;font-weight:700;white-space:nowrap;pointer-events:none;
+    opacity:.85;animation:hintFade 5s forwards}
+  @keyframes hintFade{0%,70%{opacity:.85}100%{opacity:0}}
+  .lb-stage{flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;
+    cursor:grab;touch-action:none;position:relative}
+  .lb-stage.panning{cursor:grabbing}
+  #lbImg{max-width:88vw;max-height:80vh;border-radius:14px;box-shadow:0 24px 70px rgba(0,0,0,.65);
+    user-select:none;-webkit-user-drag:none;transform-origin:center center;will-change:transform}
+  .lb-stage.anim #lbImg{transition:transform .16s ease-out}
+  #confettiCanvas{position:fixed;inset:0;pointer-events:none;z-index:60}
+  #soundBtn{position:fixed;top:14px;right:14px;z-index:20;width:44px;height:44px;border-radius:50%;
+    border:none;font-size:1.2rem;cursor:pointer;background:rgba(255,255,255,.25);backdrop-filter:blur(8px);
+    color:#fff;box-shadow:0 4px 12px rgba(0,0,0,.25);transition:.15s}
+  #soundBtn:hover{transform:scale(1.1)}
+  footer{position:relative;z-index:2;text-align:center;padding-bottom:22px;font-weight:700;opacity:.85;
+    text-shadow:0 2px 5px rgba(0,0,0,.25)}
+  @media(max-width:900px){main{flex-direction:column;align-items:center;gap:28px}}
 </style>
 </head>
 <body>
-  <div class="bg-layer">
-    <div class="bg-gradient"></div>
-    <div class="aurora">
-      <div class="aurora-wave"></div><div class="aurora-wave"></div><div class="aurora-wave"></div><div class="aurora-wave"></div>
+
+<canvas id="confettiCanvas"></canvas>
+<button id="soundBtn" title="Sound on/off">🔊</button>
+
+<header>
+  <h1><span class="wheelEmoji">🎡</span> Spin the Wheel <span class="wheelEmoji">🎡</span></h1>
+  <p>Photos load automatically • Spin • Pick a lucky winner!</p>
+</header>
+
+<main>
+  <div class="wheel-area">
+    <div class="wheel-container">
+      <div id="pointer"></div>
+      <canvas id="wheel"></canvas>
+      <div id="hub" class="hub">SPIN</div>
     </div>
-    <div id="particles"></div><div id="floatingEmojis"></div><div id="geoShapes"></div>
+    <button id="spinBtn" class="spin-btn">🎉 SPIN NOW 🎉</button>
   </div>
-  <button class="sound-toggle" id="soundToggle" onclick="toggleSound()">
-    <span id="soundIcon">🔊</span><span id="soundLabel">SFX ON</span>
-  </button>
-  <h1 class="title">🎡 Spin the Wheel! 🎡</h1>
-  <p class="subtitle">Upload images • Customize • Spin to win! (Auto-saved)</p>
-  <div class="app-container">
-    <div class="wheel-section">
-      <div class="wheel-wrapper" id="wheelWrapper">
-        <div class="wheel-glow"></div><div class="wheel-border"></div><div class="wheel-border-inner"></div>
-        <div class="pointer">
-          <svg viewBox="0 0 55 60" fill="none">
-            <path d="M27.5 55 L3 12 Q27.5 -2 52 12 Z" fill="#ff4757" stroke="#ffd700" stroke-width="3" stroke-linejoin="round"/>
-            <circle cx="27.5" cy="14" r="7" fill="#ffd700" stroke="#fff" stroke-width="2"/>
-          </svg>
-        </div>
-        <canvas id="wheel" width="500" height="500"></canvas>
-        <button class="center-btn" id="spinBtn" onclick="spinWheel()">SPIN!</button>
-      </div>
+
+  <aside id="panel" class="panel">
+    <h2>👥 Players</h2>
+    <p class="hint">💡 Photos load from <b>photo1.jpg – photo5.jpg</b> in the same folder. Click a photo to <b>view full screen</b> (zoom + pan). You can still <b>upload / drag &amp; drop</b> photos anytime. <b>Space</b> = spin</p>
+    <div id="playerList"></div>
+    <div class="btn-row">
+      <button id="uploadAllBtn" class="add-btn">📂 Upload All Photos</button>
+      <button id="addBtn" class="add-btn">➕ Add Player</button>
     </div>
-    <div class="control-panel">
-      <div class="panel-header">⚙️ Customize Your Wheel<span>Upload images • Edit labels • Pick colors</span></div>
-      <div class="segment-list" id="segmentList"></div>
-      <div class="action-buttons">
-        <button class="add-segment-btn" id="addBtn" onclick="addSegment()">➕ Add Segment</button>
-        <button class="reset-btn" onclick="resetWheel()">🗑️ Reset All</button>
-      </div>
-    </div>
-  </div>
-  <div class="modal-overlay" id="modal">
-    <div class="modal">
-      <h2>🎉 WHO IS DRESSED UP? 🎉</h2>
-      <p class="winner-text" id="winnerText"></p>
-      <img class="winner-image" id="winnerImage" src="" alt="Winner" onclick="openZoomFromModal()">
-      <br>
-      <button class="close-btn" onclick="closeModal()">🔄 Spin Again!</button>
-    </div>
-  </div>
-  <div class="zoom-viewer" id="zoomViewer">
-    <button class="zoom-close" onclick="closeZoom(event)" title="Close (ESC)">✕</button>
-    <div class="zoom-info"><span>🔍 Click image to zoom • Drag to pan • Scroll to zoom</span><span class="zoom-level-badge" id="zoomLevelBadge">100%</span></div>
-    <div class="zoom-image-container" id="zoomContainer"><img id="zoomImage" src="" alt="Full View"></div>
-    <div class="zoom-controls">
-      <button class="zoom-btn" onclick="zoomIn(event)" title="Zoom In (+)">➕</button>
-      <button class="zoom-btn" onclick="zoomOut(event)" title="Zoom Out (-)">➖</button>
-      <button class="zoom-btn" onclick="resetZoom(event)" title="Reset (R)">🔄</button>
-      <button class="zoom-btn" onclick="rotateZoom(event)" title="Rotate (Q)">🔃</button>
+    <button id="exportBtn" class="export-btn">💾 Export Single-File Copy (photos baked in)</button>
+    <button id="clearBtn" class="clear-btn">🧹 Clear saved data &amp; reset</button>
+    <p class="saved-note">💾 Photos &amp; names auto-save in your browser</p>
+  </aside>
+</main>
+
+<footer>Made with ❤️ for your classroom</footer>
+
+<!-- Winner modal -->
+<div id="modal" class="modal hidden">
+  <div class="modal-card">
+    <h2>🏆 Congratulations! 🎉</h2>
+    <span class="winner-pic"><img id="winnerImg" draggable="false" alt="Winner" title="Click to view full screen"></span>
+    <p id="winnerName"></p>
+    <p class="modal-sub">is our lucky winner! ⭐</p>
+    <div class="modal-actions">
+      <button id="removeBtn">➖ Remove from Wheel</button>
+      <button id="againBtn">🔄 Spin Again</button>
     </div>
   </div>
-  <div class="confetti-container" id="confetti"></div>
-  <div class="toast" id="toast"></div>
-  <input type="file" id="fileInput" accept="image/*" style="display:none">
+</div>
+
+<!-- Fullscreen image viewer -->
+<div id="lightbox" class="lightbox hidden">
+  <div class="lb-top">
+    <span class="lb-name" id="lbName"></span>
+    <div class="lb-tools">
+      <button id="lbZoomOut" title="Zoom out ( − )">➖</button>
+      <span id="lbZoomLevel">100%</span>
+      <button id="lbZoomIn" title="Zoom in ( + )">➕</button>
+      <button id="lbReset" title="Reset view ( 0 )">🔁</button>
+      <button id="lbChange" title="Upload a different photo">📷 Change</button>
+      <button id="lbClose" title="Close ( Esc )">✕</button>
+    </div>
+  </div>
+  <div class="lb-stage anim" id="lbStage">
+    <img id="lbImg" draggable="false" alt="Photo viewer">
+  </div>
+  <div class="lb-hint">🖱️ Scroll to zoom • Drag to pan • Double-click to zoom in/out</div>
+</div>
+
+<input type="file" id="fileInput" accept="image/*" hidden>
+<input type="file" id="multiInput" accept="image/*" multiple hidden>
+
 <script>
-const defaultColors = ['#FF6B6B', '#4D96FF', '#6BCB77', '#FFD93D', '#C084FC', '#FF6B9D', '#FB923C', '#06B6D4', '#8B5CF6', '#EC4899'];
-const defaultSegments = [
-  { label: "Pajama Boy", color: "#FF6B6B", textColor: "#fff", image: null, emoji: "😴" },
-  { label: "Speaker Boy", color: "#4D96FF", textColor: "#fff", image: null, emoji: "🎤" },
-  { label: "Traditional Boy", color: "#6BCB77", textColor: "#fff", image: null, emoji: "🕌" },
-  { label: "Writer Boy", color: "#FFD93D", textColor: "#333", image: null, emoji: "✍️" },
-  { label: "Sweater Boy", color: "#C084FC", textColor: "#fff", image: null, emoji: "🧥" }
-];
-let segments = JSON.parse(JSON.stringify(defaultSegments));
+/* =====================================================================
+   PHOTO SETTINGS — your 5 photos load from files in the SAME FOLDER:
+   photo1.jpg  photo2.jpg  photo3.jpg  photo4.jpg  photo5.jpg
+   (.jpeg / .png / .webp also work automatically)
+   Change the names below to your students' real names if you like.
+===================================================================== */
+const PRELOADED_PHOTOS = [ {name:'Player 1',src:'photo1'},{name:'Player 2',src:'photo2'},{name:'Player 3',src:'photo3'},{name:'Player 4',src:'photo4'},{name:'Player 5',src:'photo5'} ];
+
+/* snapshot of the page source — used by the Export button */
+const PAGE_SOURCE = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+
+/* ================= SETUP ================= */
+const SIZE = 520;
+const PALETTE = ['#ff6b6b','#ffa94d','#ffd43b','#51cf66','#22b8cf','#845ef7','#f783ac','#38d9a9','#4dabf7','#e599f7'];
+const EMOJI = ['😀','😎','🥳','😊','🤩','😄','😇','🌟'];
+
 const canvas = document.getElementById('wheel');
 const ctx = canvas.getContext('2d');
-let numSegments = segments.length;
-let arcSize = (2 * Math.PI) / numSegments;
-let currentAngle = 0;
-let isSpinning = false;
-let loadedImages = [];
-let uploadTargetIndex = -1;
-let soundEnabled = true;
-let audioCtx = null;
-// ================= LOCAL STORAGE SAVE/LOAD =================
-function saveData() {
-  try {
-    localStorage.setItem('spinWheelData_v2', JSON.stringify(segments));
-  } catch (e) {
-    if (e.name === 'QuotaExceededError') {
-      showToast('⚠️ Storage full! Try smaller images.');
-    }
-  }
-}
-function loadData() {
-  const saved = localStorage.getItem('spinWheelData_v2');
-  if (saved) {
-    try {
-      segments = JSON.parse(saved);
-      numSegments = segments.length;
-      arcSize = (2 * Math.PI) / numSegments;
-      
-      // Preload saved images into memory
-      segments.forEach((seg, i) => {
-        if (seg.image) {
-          const img = new Image();
-          img.onload = () => {
-            loadedImages[i] = img;
-            drawWheel();
-          };
-          img.src = seg.image;
-        } else {
-          loadedImages[i] = null;
-        }
-      });
-    } catch (e) {
-      console.error("Failed to load saved data", e);
-      segments = JSON.parse(JSON.stringify(defaultSegments));
-    }
-  }
-}
-function resetWheel() {
-  if (!confirm("Are you sure you want to reset the wheel? All uploaded images and customizations will be lost.")) return;
-  localStorage.removeItem('spinWheelData_v2');
-  segments = JSON.parse(JSON.stringify(defaultSegments));
-  numSegments = segments.length;
-  arcSize = (2 * Math.PI) / numSegments;
-  loadedImages = [];
-  currentAngle = 0;
-  drawWheel();
-  renderSegmentList();
-  showToast('🗑️ Wheel reset to default!');
-  playClick();
-}
-// ===========================================================
-function initAudio() {
-  if (!audioCtx) {
-    try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {}
-  }
-}
-function playTone(freq, duration, type = 'sine', volume = 0.15, delay = 0) {
-  if (!soundEnabled || !audioCtx) return;
-  const osc = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-  osc.type = type; osc.frequency.value = freq;
-  const startTime = audioCtx.currentTime + delay;
-  gain.gain.setValueAtTime(0, startTime);
-  gain.gain.linearRampToValueAtTime(volume, startTime + 0.02);
-  gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
-  osc.connect(gain); gain.connect(audioCtx.destination);
-  osc.start(startTime); osc.stop(startTime + duration);
-}
-function playTick() {
-  if (!soundEnabled || !audioCtx) return;
-  const osc = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-  osc.type = 'square'; osc.frequency.value = 800 + Math.random() * 400;
-  gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
-  osc.connect(gain); gain.connect(audioCtx.destination);
-  osc.start(); osc.stop(audioCtx.currentTime + 0.05);
-}
-function playSpinWhoosh() {
-  if (!soundEnabled || !audioCtx) return;
-  const bufferSize = audioCtx.sampleRate * 0.3;
-  const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-  const data = buffer.getChannelData(0);
-  for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * (1 - i/bufferSize);
-  const source = audioCtx.createBufferSource();
-  source.buffer = buffer;
-  const filter = audioCtx.createBiquadFilter();
-  filter.type = 'bandpass'; filter.frequency.value = 1000;
-  const gain = audioCtx.createGain(); gain.gain.value = 0.1;
-  source.connect(filter); filter.connect(gain); gain.connect(audioCtx.destination);
-  source.start();
-}
-function playWinFanfare() {
-  if (!soundEnabled || !audioCtx) return;
-  const melody = [{ f: 523.25, d: 0.2 }, { f: 659.25, d: 0.2 }, { f: 783.99, d: 0.2 }, { f: 1046.50, d: 0.4 }, { f: 783.99, d: 0.15 }, { f: 1046.50, d: 0.5 }];
-  let time = 0;
-  melody.forEach(note => {
-    playTone(note.f, note.d, 'triangle', 0.2, time);
-    playTone(note.f * 0.5, note.d, 'sine', 0.1, time);
-    time += note.d;
-  });
-}
-function playClick() { playTone(600, 0.08, 'sine', 0.1); }
-function playSuccess() { playTone(880, 0.15, 'sine', 0.15); playTone(1100, 0.15, 'sine', 0.12, 0.1); }
-function toggleSound() {
-  initAudio();
-  soundEnabled = !soundEnabled;
-  document.getElementById('soundIcon').textContent = soundEnabled ? '🔊' : '🔇';
-  document.getElementById('soundLabel').textContent = soundEnabled ? 'SFX ON' : 'SFX OFF';
-  document.getElementById('soundToggle').classList.toggle('muted', !soundEnabled);
-}
+const confettiCanvas = document.getElementById('confettiCanvas');
+const cctx = confettiCanvas.getContext('2d');
+const spinBtn = document.getElementById('spinBtn');
+const hub = document.getElementById('hub');
+const pointerEl = document.getElementById('pointer');
+const playerList = document.getElementById('playerList');
+const addBtn = document.getElementById('addBtn');
+const uploadAllBtn = document.getElementById('uploadAllBtn');
+const exportBtn = document.getElementById('exportBtn');
+const clearBtn = document.getElementById('clearBtn');
+const modal = document.getElementById('modal');
+const winnerImg = document.getElementById('winnerImg');
+const winnerName = document.getElementById('winnerName');
+const removeBtn = document.getElementById('removeBtn');
+const againBtn = document.getElementById('againBtn');
 const fileInput = document.getElementById('fileInput');
-fileInput.addEventListener('change', (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = (event) => {
-    const img = new Image();
-    img.onload = () => {
-      segments[uploadTargetIndex].image = event.target.result;
-      loadedImages[uploadTargetIndex] = img;
-      saveData(); // SAVE TO LOCAL STORAGE
-      drawWheel();
-      renderSegmentList();
-      showToast('✅ Image uploaded & saved!');
-      playSuccess();
-      setTimeout(() => openZoom(event.target.result), 300);
-    };
-    img.src = event.target.result;
+const multiInput = document.getElementById('multiInput');
+const soundBtn = document.getElementById('soundBtn');
+const panel = document.getElementById('panel');
+
+const lightbox = document.getElementById('lightbox');
+const lbStage = document.getElementById('lbStage');
+const lbImg = document.getElementById('lbImg');
+const lbName = document.getElementById('lbName');
+const lbZoomLevel = document.getElementById('lbZoomLevel');
+const lbZoomIn = document.getElementById('lbZoomIn');
+const lbZoomOut = document.getElementById('lbZoomOut');
+const lbReset = document.getElementById('lbReset');
+const lbChange = document.getElementById('lbChange');
+const lbClose = document.getElementById('lbClose');
+
+let rotation = 0, spinning = false, soundOn = true;
+let editingIndex = -1, currentWinnerIndex = -1;
+
+function makeAvatar(emoji,bg){
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240">
+    <rect width="240" height="240" fill="${bg}"/>
+    <text x="120" y="128" font-size="130" text-anchor="middle" dominant-baseline="central">${emoji}</text></svg>`;
+  return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+}
+function loadImage(src){
+  return new Promise(res=>{const im=new Image();im.onload=()=>res(im);im.onerror=()=>res(null);im.src=src;});
+}
+function loadImageInto(seg){ seg.img=null; loadImage(seg.src).then(im=>seg.img=im); }
+
+/* try base name with several extensions (.jpg .jpeg .png .webp) */
+function resolvePhotoSrc(base,cb){
+  if(base.startsWith('data:')){cb(base);return;}
+  const clean=base.replace(/\.(jpg|jpeg|png|webp)$/i,'');
+  const exts=['.jpg','.jpeg','.png','.webp','.JPG','.JPEG','.PNG'];
+  let i=0;
+  (function tryNext(){
+    if(i>=exts.length){cb(null);return;}
+    const src=clean+exts[i];
+    const im=new Image();
+    im.onload=()=>cb(src);
+    im.onerror=()=>{i++;tryNext();};
+    im.src=src;
+  })();
+}
+
+/* shrink uploaded photos so storage stays small */
+function shrinkImage(dataUrl,maxDim,cb){
+  const im=new Image();
+  im.onload=()=>{
+    const sc=Math.min(1,maxDim/Math.max(im.naturalWidth,im.naturalHeight));
+    const w=Math.round(im.naturalWidth*sc), h=Math.round(im.naturalHeight*sc);
+    const c=document.createElement('canvas');c.width=w;c.height=h;
+    c.getContext('2d').drawImage(im,0,0,w,h);
+    cb(c.toDataURL('image/jpeg',0.85));
   };
-  reader.readAsDataURL(file);
-  fileInput.value = '';
+  im.onerror=()=>cb(dataUrl);
+  im.src=dataUrl;
+}
+
+/* ================= SAVE / LOAD ================= */
+function saveData(){
+  try{
+    const data=segments.map(s=>({name:s.name,src:s.src}));
+    localStorage.setItem('wheelPhotosV1',JSON.stringify(data));
+  }catch(e){}
+}
+function loadData(){
+  try{
+    const raw=localStorage.getItem('wheelPhotosV1');
+    if(raw){
+      const arr=JSON.parse(raw);
+      if(Array.isArray(arr)&&arr.length){
+        segments=arr.map((s,i)=>({name:s.name||('Player '+(i+1)),src:s.src,img:null}));
+        return true;
+      }
+    }
+  }catch(e){}
+  return false;
+}
+
+/* ================= INIT PLAYERS ================= */
+let segments;
+if(!loadData()){
+  segments=PRELOADED_PHOTOS.map((p,i)=>({
+    name:p.name||('Player '+(i+1)),
+    src:p.src||makeAvatar(EMOJI[i%EMOJI.length],PALETTE[i%PALETTE.length]),
+    img:null
+  }));
+}
+/* resolve file-based photos (tries .jpg/.jpeg/.png/.webp), fallback = emoji avatar */
+segments.forEach((seg,i)=>{
+  if(seg.src && !seg.src.startsWith('data:')){
+    resolvePhotoSrc(seg.src,res=>{
+      seg.src = res || makeAvatar(EMOJI[i%EMOJI.length],PALETTE[i%PALETTE.length]);
+      loadImageInto(seg);renderList();
+    });
+  }
 });
-function lightenColor(color, percent) {
-  const num = parseInt(color.replace('#', ''), 16);
-  const amt = Math.round(2.55 * percent);
-  return `rgb(${Math.min(255, (num >> 16) + amt)},${Math.min(255, ((num >> 8) & 0x00FF) + amt)},${Math.min(255, (num & 0x0000FF) + amt)})`;
-}
-function drawWheel() {
-  const W = canvas.width, H = canvas.height;
-  const cx = W / 2, cy = H / 2;
-  const radius = W / 2 - 10;
-  ctx.clearRect(0, 0, W, H);
-  for (let i = 0; i < numSegments; i++) {
-    const startAngle = currentAngle + i * arcSize;
-    const endAngle = startAngle + arcSize;
-    ctx.save(); ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, radius, startAngle, endAngle); ctx.closePath();
-    const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
-    grad.addColorStop(0, lightenColor(segments[i].color, 30));
-    grad.addColorStop(1, segments[i].color);
-    ctx.fillStyle = grad; ctx.fill();
-    ctx.strokeStyle = 'rgba(255,255,255,0.6)'; ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
-    if (loadedImages[i]) {
-      ctx.save(); ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, radius * 0.92, startAngle + 0.02, endAngle - 0.02); ctx.closePath(); ctx.clip();
-      const img = loadedImages[i];
-      const midAngle = startAngle + arcSize / 2;
-      const imgDist = radius * 0.55;
-      ctx.drawImage(img, cx + Math.cos(midAngle) * imgDist - (radius * 0.275), cy + Math.sin(midAngle) * imgDist - (radius * 0.275), radius * 0.55, radius * 0.55);
-      ctx.restore();
-    }
-    ctx.save(); ctx.translate(cx, cy); ctx.rotate(startAngle + arcSize / 2);
-    ctx.font = '30px serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText(segments[i].emoji || '⭐', radius * 0.85, 0); ctx.restore();
-    ctx.save(); ctx.translate(cx, cy); ctx.rotate(startAngle + arcSize / 2);
-    ctx.fillStyle = segments[i].textColor; ctx.font = 'bold 20px Nunito, sans-serif';
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = 4; ctx.shadowOffsetX = 1; ctx.shadowOffsetY = 2;
-    ctx.fillText(segments[i].label, radius * 0.65, 0); ctx.restore();
-  }
-  ctx.beginPath(); ctx.arc(cx, cy, 60, 0, 2 * Math.PI);
-  const innerGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, 60);
-  innerGrad.addColorStop(0, '#3d2a7a'); innerGrad.addColorStop(1, '#1a0f3d');
-  ctx.fillStyle = innerGrad; ctx.fill();
-  ctx.strokeStyle = '#ffd700'; ctx.lineWidth = 4; ctx.stroke();
-  ctx.font = '35px serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillText('🎯', cx, cy);
-}
-function spinWheel() {
-  if (isSpinning) return;
-  if (numSegments < 2) { showToast('⚠️ Add at least 2 segments!'); return; }
-  initAudio();
-  isSpinning = true;
-  const spinBtn = document.getElementById('spinBtn');
-  spinBtn.classList.add('spinning'); spinBtn.textContent = '...';
-  playSpinWhoosh();
-  const spinDuration = 4500 + Math.random() * 2500;
-  const totalRotation = (6 + Math.random() * 6) * 2 * Math.PI;
-  const startTime = performance.now();
-  const startAngle = currentAngle;
-  let lastTickAngle = 0;
-  function easeOutQuart(t) { return 1 - Math.pow(1 - t, 4); }
-  function animate(now) {
-    const elapsed = now - startTime;
-    const progress = Math.min(elapsed / spinDuration, 1);
-    currentAngle = startAngle + totalRotation * easeOutQuart(progress);
-    drawWheel();
-    if (Math.abs(currentAngle - lastTickAngle) > arcSize) { playTick(); lastTickAngle = currentAngle; }
-    if (progress < 1) requestAnimationFrame(animate);
-    else {
-      isSpinning = false; spinBtn.classList.remove('spinning'); spinBtn.textContent = 'SPIN!';
-      setTimeout(determineWinner, 400);
-    }
-  }
-  requestAnimationFrame(animate);
-}
-function determineWinner() {
-  const pointerAngle = (3 * Math.PI / 2);
-  const normalizedAngle = ((pointerAngle - currentAngle) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
-  const winnerIndex = Math.floor(normalizedAngle / arcSize) % numSegments;
-  showResult(segments[winnerIndex], winnerIndex);
-}
-function showResult(winner, index) {
-  document.getElementById('winnerText').textContent = `${winner.emoji} ${winner.label} ${winner.emoji}`;
-  const imgEl = document.getElementById('winnerImage');
-  imgEl.src = winner.image || '';
-  imgEl.style.display = winner.image ? 'block' : 'none';
-  document.getElementById('modal').classList.add('show');
-  launchConfetti(); playWinFanfare(); launchEmotionBurst();
-}
-function closeModal() { document.getElementById('modal').classList.remove('show'); document.getElementById('confetti').innerHTML = ''; playClick(); }
-function openZoomFromModal() {
-  const img = document.getElementById('winnerImage');
-  if (img.src && img.src !== window.location.href) openZoom(img.src);
-}
-function launchConfetti() {
-  const container = document.getElementById('confetti'); container.innerHTML = '';
-  const colors = ['#ff6b6b', '#ffd93d', '#6bcb77', '#4d96ff', '#c084fc', '#ff6b9d', '#fb923c', '#ffd700'];
-  for (let i = 0; i < 120; i++) {
-    const piece = document.createElement('div'); piece.className = 'confetti-piece';
-    piece.style.left = Math.random() * 100 + '%';
-    piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-    piece.style.width = (Math.random() * 10 + 6) + 'px'; piece.style.height = (Math.random() * 15 + 8) + 'px';
-    piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
-    piece.style.setProperty('--drift', (Math.random() - 0.5) * 300 + 'px');
-    piece.style.animation = `confettiFall ${2 + Math.random() * 2.5}s ease-out ${Math.random() * 0.4}s forwards`;
-    container.appendChild(piece);
-  }
-}
-function launchEmotionBurst() {
-  const emotions = ['🎉', '🥳', '😍', '🤩', '💃', '🕺', '✨', '🌟', '💫', '🎊', '🎈', '🏆', '👑', '💖', '🔥'];
-  const centerX = window.innerWidth / 2, centerY = window.innerHeight / 2;
-  for (let i = 0; i < 25; i++) {
-    setTimeout(() => {
-      const emoji = document.createElement('div'); emoji.className = 'emotion-burst';
-      emoji.textContent = emotions[Math.floor(Math.random() * emotions.length)];
-      const angle = (Math.PI * 2 * i) / 25, distance = 150 + Math.random() * 200;
-      emoji.style.left = centerX + 'px'; emoji.style.top = centerY + 'px';
-      emoji.style.setProperty('--dx', Math.cos(angle) * distance + 'px');
-      emoji.style.setProperty('--dy', Math.sin(angle) * distance + 'px');
-      emoji.style.setProperty('--rot', (Math.random() * 720 - 360) + 'deg');
-      document.body.appendChild(emoji);
-      setTimeout(() => emoji.remove(), 2000);
-    }, i * 50);
-  }
-  const cornerEmojis = ['🎉', '🏆', '🎊', '👑'];
-  [{ x: '10%', y: '20%' }, { x: '85%', y: '20%' }, { x: '10%', y: '70%' }, { x: '85%', y: '70%' }].forEach((pos, i) => {
-    setTimeout(() => {
-      const el = document.createElement('div'); el.className = 'celebration-emoji'; el.textContent = cornerEmojis[i];
-      el.style.left = pos.x; el.style.top = pos.y;
-      document.body.appendChild(el); setTimeout(() => el.remove(), 1000);
-    }, i * 200);
+segments.forEach(loadImageInto);
+
+/* ================= PLAYERS PANEL ================= */
+function escapeHtml(s){return (s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+function renderList(){
+  playerList.innerHTML='';
+  segments.forEach((seg,i)=>{
+    const row=document.createElement('div');row.className='player';
+    row.innerHTML=`
+      <span class="pic"><img src="${seg.src}" title="Click to view full screen" draggable="false"></span>
+      <input type="text" maxlength="18" placeholder="Player ${i+1}" value="${escapeHtml(seg.name)}">
+      <button class="del" title="Remove">✕</button>`;
+    row.querySelector('img').addEventListener('click',()=>openLightbox(i));
+    row.querySelector('input').addEventListener('input',e=>{seg.name=e.target.value;saveData();});
+    row.querySelector('.del').addEventListener('click',()=>{
+      if(!spinning){segments.splice(i,1);renderList();saveData();}
+    });
+    playerList.appendChild(row);
   });
 }
-let zoomLevel = 1, zoomRotation = 0, zoomPanX = 0, zoomPanY = 0, isDragging = false, dragStartX = 0, dragStartY = 0;
-function openZoom(src) {
-  zoomLevel = 1; zoomRotation = 0; zoomPanX = 0; zoomPanY = 0;
-  document.getElementById('zoomImage').src = src;
-  applyZoom();
-  document.getElementById('zoomViewer').classList.add('show');
-  playSuccess(); document.body.style.overflow = 'hidden';
-}
-function closeZoom(e) {
-  if (e) e.stopPropagation();
-  document.getElementById('zoomViewer').classList.remove('show');
-  document.body.style.overflow = ''; playClick();
-}
-function handleZoomClick(e) { if (e.target.id === 'zoomViewer' || e.target.id === 'zoomContainer') closeZoom(); }
-function zoomIn(e) { if (e) e.stopPropagation(); zoomLevel = Math.min(8, zoomLevel + 0.5); applyZoom(); playClick(); }
-function zoomOut(e) { if (e) e.stopPropagation(); zoomLevel = Math.max(0.5, zoomLevel - 0.5); if (zoomLevel === 1) { zoomPanX = 0; zoomPanY = 0; } applyZoom(); playClick(); }
-function resetZoom(e) { if (e) e.stopPropagation(); zoomLevel = 1; zoomRotation = 0; zoomPanX = 0; zoomPanY = 0; applyZoom(); playClick(); }
-function rotateZoom(e) { if (e) e.stopPropagation(); zoomRotation = (zoomRotation + 90) % 360; applyZoom(); playClick(); }
-function applyZoom() {
-  const img = document.getElementById('zoomImage');
-  img.style.transform = `translate(${zoomPanX}px, ${zoomPanY}px) scale(${zoomLevel}) rotate(${zoomRotation}deg)`;
-  document.getElementById('zoomLevelBadge').textContent = Math.round(zoomLevel * 100) + '%';
-}
-const zoomImageEl = document.getElementById('zoomImage');
-zoomImageEl.addEventListener('mousedown', (e) => {
-  if (zoomLevel > 1) { isDragging = true; dragStartX = e.clientX - zoomPanX; dragStartY = e.clientY - zoomPanY; zoomImageEl.style.cursor = 'grabbing'; }
+
+fileInput.addEventListener('change',e=>{
+  const f=e.target.files[0];
+  if(!f||editingIndex<0)return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    shrinkImage(ev.target.result,900,small=>{
+      segments[editingIndex].src=small;
+      loadImageInto(segments[editingIndex]);
+      renderList();saveData();
+      if(lbSource.index===editingIndex)lbImg.src=small;
+    });
+  };
+  r.readAsDataURL(f);fileInput.value='';
 });
-document.addEventListener('mousemove', (e) => { if (!isDragging) return; e.preventDefault(); zoomPanX = e.clientX - dragStartX; zoomPanY = e.clientY - dragStartY; applyZoom(); });
-document.addEventListener('mouseup', () => { if (isDragging) { isDragging = false; zoomImageEl.style.cursor = 'grab'; } });
-zoomImageEl.addEventListener('touchstart', (e) => { if (zoomLevel > 1 && e.touches.length === 1) { isDragging = true; dragStartX = e.touches[0].clientX - zoomPanX; dragStartY = e.touches[0].clientY - zoomPanY; } }, { passive: true });
-document.addEventListener('touchmove', (e) => { if (!isDragging) return; zoomPanX = e.touches[0].clientX - dragStartX; zoomPanY = e.touches[0].clientY - dragStartY; applyZoom(); }, { passive: true });
-document.addEventListener('touchend', () => { isDragging = false; });
-document.getElementById('zoomViewer').addEventListener('wheel', (e) => {
+
+uploadAllBtn.addEventListener('click',()=>{if(!spinning)multiInput.click();});
+multiInput.addEventListener('change',e=>{
+  const files=[...e.target.files].filter(f=>f.type.startsWith('image/'));
+  files.forEach((f,i)=>{
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      shrinkImage(ev.target.result,900,small=>{
+        if(i<segments.length){segments[i].src=small;loadImageInto(segments[i]);}
+        else{const s={name:'Player '+(segments.length+1),src:small,img:null};segments.push(s);loadImageInto(s);}
+        renderList();saveData();
+      });
+    };
+    reader.readAsDataURL(f);
+  });
+  multiInput.value='';
+});
+
+addBtn.addEventListener('click',()=>{
+  if(spinning)return;
+  const i=segments.length;
+  const s={name:'Player '+(i+1),src:makeAvatar(EMOJI[i%EMOJI.length],PALETTE[i%PALETTE.length]),img:null};
+  segments.push(s);loadImageInto(s);renderList();saveData();
+});
+
+clearBtn.addEventListener('click',()=>{
+  if(spinning)return;
+  if(!confirm('Reset all players, photos and saved data?'))return;
+  try{localStorage.removeItem('wheelPhotosV1');}catch(e){}
+  segments=PRELOADED_PHOTOS.map((p,i)=>({
+    name:p.name||('Player '+(i+1)),
+    src:p.src||makeAvatar(EMOJI[i%EMOJI.length],PALETTE[i%PALETTE.length]),
+    img:null
+  }));
+  segments.forEach((seg,i)=>{
+    if(seg.src && !seg.src.startsWith('data:')){
+      resolvePhotoSrc(seg.src,res=>{
+        seg.src = res || makeAvatar(EMOJI[i%EMOJI.length],PALETTE[i%PALETTE.length]);
+        loadImageInto(seg);renderList();
+      });
+    }
+  });
+  segments.forEach(loadImageInto);
+  renderList();
+});
+
+/* drag & drop photos onto the panel */
+window.addEventListener('dragover',e=>e.preventDefault());
+window.addEventListener('drop',e=>e.preventDefault());
+['dragover','dragenter'].forEach(ev=>panel.addEventListener(ev,e=>{e.preventDefault();panel.classList.add('drag');}));
+panel.addEventListener('dragleave',()=>panel.classList.remove('drag'));
+panel.addEventListener('drop',e=>{
+  e.preventDefault();panel.classList.remove('drag');if(spinning)return;
+  const files=[...e.dataTransfer.files].filter(f=>f.type.startsWith('image/'));
+  files.forEach((f,i)=>{
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      shrinkImage(ev.target.result,900,small=>{
+        if(i<segments.length){segments[i].src=small;loadImageInto(segments[i]);}
+        else{const s={name:'Player '+(segments.length+1),src:small,img:null};segments.push(s);loadImageInto(s);}
+        renderList();saveData();
+      });
+    };
+    reader.readAsDataURL(f);
+  });
+});
+
+/* ================= DRAW WHEEL ================= */
+function resizeAll(){
+  const dpr=Math.min(window.devicePixelRatio||1,2);
+  canvas.width=SIZE*dpr;canvas.height=SIZE*dpr;
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  confettiCanvas.width=innerWidth;confettiCanvas.height=innerHeight;
+}
+window.addEventListener('resize',resizeAll);
+
+function drawCover(img,cx,cy,r){
+  const s=Math.min(img.naturalWidth,img.naturalHeight);
+  const sx=(img.naturalWidth-s)/2;
+  let sy=(img.naturalHeight-s)*0.32;          /* bias crop toward the face */
+  sy=Math.max(0,Math.min(sy,img.naturalHeight-s));
+  ctx.drawImage(img,sx,sy,s,s,cx-r,cy-r,r*2,r*2);
+}
+
+function drawWheel(time){
+  ctx.clearRect(0,0,SIZE,SIZE);
+  const cx=SIZE/2, cy=SIZE/2, R=SIZE/2-14, n=segments.length;
+
+  if(n===0){
+    ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);
+    ctx.fillStyle='rgba(255,255,255,.22)';ctx.fill();
+    ctx.setLineDash([12,10]);ctx.lineWidth=4;ctx.strokeStyle='rgba(255,255,255,.7)';ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#fff';ctx.font='700 22px "Baloo 2",sans-serif';
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText('Add players to start! ➕',cx,cy);
+    return;
+  }
+
+  const A=2*Math.PI/n;
+  ctx.save();ctx.translate(cx,cy);ctx.rotate(rotation);
+
+  for(let i=0;i<n;i++){
+    const a0=i*A, a1=a0+A, am=a0+A/2;
+    ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,R,a0,a1);ctx.closePath();
+    ctx.fillStyle=PALETTE[i%PALETTE.length];ctx.fill();
+
+    const d=R*0.615, r=R*0.165;
+    const ix=Math.cos(am)*d, iy=Math.sin(am)*d;
+    const seg=segments[i];
+    ctx.save();
+    ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,R,a0+0.015,a1-0.015);ctx.closePath();ctx.clip();
+    ctx.beginPath();ctx.arc(ix,iy,r,0,Math.PI*2);ctx.clip();
+    if(seg.img && seg.img.complete && seg.img.naturalWidth){ drawCover(seg.img,ix,iy,r); }
+    else{
+      ctx.fillStyle='rgba(255,255,255,.9)';ctx.fillRect(ix-r,iy-r,r*2,r*2);
+      ctx.font=Math.floor(r*1.05)+'px serif';ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillStyle='#888';ctx.fillText('📷',ix,iy+r*0.07);
+    }
+    ctx.lineWidth=4.5;ctx.strokeStyle='#fff';
+    ctx.beginPath();ctx.arc(ix,iy,r,0,Math.PI*2);ctx.stroke();
+    ctx.restore();
+
+    const nm=(seg.name||'').trim();
+    if(nm){
+      ctx.save();ctx.rotate(am);ctx.translate(R*0.855,0);ctx.rotate(Math.PI/2);
+      ctx.font='800 15px "Baloo 2",sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.lineWidth=4;ctx.lineJoin='round';ctx.strokeStyle='rgba(0,0,0,.4)';ctx.strokeText(nm,0,0);
+      ctx.fillStyle='#fff';ctx.fillText(nm,0,0);ctx.restore();
+    }
+    ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,R,a0,a1);ctx.closePath();
+    ctx.lineWidth=2.5;ctx.strokeStyle='rgba(255,255,255,.95)';ctx.stroke();
+  }
+  ctx.restore();
+
+  const shine=ctx.createRadialGradient(cx-R*.38,cy-R*.38,R*.08,cx,cy,R*1.02);
+  shine.addColorStop(0,'rgba(255,255,255,.28)');
+  shine.addColorStop(.45,'rgba(255,255,255,.04)');
+  shine.addColorStop(1,'rgba(0,0,0,.14)');
+  ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.fillStyle=shine;ctx.fill();
+
+  const rim=ctx.createLinearGradient(cx-R,cy-R,cx+R,cy+R);
+  rim.addColorStop(0,'#ffe08a');rim.addColorStop(.5,'#f59f00');rim.addColorStop(1,'#ffe08a');
+  ctx.beginPath();ctx.arc(cx,cy,R+7,0,Math.PI*2);
+  ctx.lineWidth=14;ctx.strokeStyle=rim;ctx.stroke();
+
+  const bulbs=16;
+  for(let k=0;k<bulbs;k++){
+    const a=k*Math.PI*2/bulbs+Math.PI/bulbs;
+    const bx=cx+Math.cos(a)*(R+7), by=cy+Math.sin(a)*(R+7);
+    const tw=0.5+0.5*Math.sin(time/280+k*1.7);
+    ctx.beginPath();ctx.arc(bx,by,4.5,0,Math.PI*2);
+    ctx.fillStyle=tw>0.5?'#fff9db':'#ffd43b';
+    ctx.shadowColor='rgba(255,220,100,.9)';ctx.shadowBlur=tw*10;
+    ctx.fill();ctx.shadowBlur=0;
+  }
+  ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);
+  ctx.lineWidth=6;ctx.strokeStyle='rgba(0,0,0,.12)';ctx.stroke();
+}
+
+/* ================= SPIN LOGIC ================= */
+function currentPointerIndex(){
+  const n=segments.length;if(!n)return -1;
+  let local=(-Math.PI/2-rotation)%(2*Math.PI);
+  if(local<0)local+=2*Math.PI;
+  return Math.floor(local/(2*Math.PI/n))%n;
+}
+function kickPointer(){
+  pointerEl.classList.remove('kick');void pointerEl.offsetWidth;pointerEl.classList.add('kick');
+}
+
+function spin(){
+  if(spinning||segments.length===0)return;
+  ensureAudio();
+  spinning=true;spinBtn.disabled=true;hub.style.pointerEvents='none';
+  modal.classList.add('hidden');
+  const turns=5+Math.random()*3;
+  const startR=rotation, delta=turns*2*Math.PI+Math.random()*2*Math.PI;
+  const duration=4300+Math.random()*900, t0=performance.now();
+  let lastIdx=currentPointerIndex();
+
+  (function frame(now){
+    const t=Math.min(1,(now-t0)/duration);
+    rotation=startR+delta*(1-Math.pow(1-t,4));
+    const idx=currentPointerIndex();
+    if(idx!==lastIdx){lastIdx=idx;playTick();kickPointer();}
+    if(t<1)requestAnimationFrame(frame);else finish();
+  })(t0);
+}
+function finish(){
+  spinning=false;spinBtn.disabled=false;hub.style.pointerEvents='';
+  const idx=currentPointerIndex(), w=segments[idx];
+  if(w){
+    currentWinnerIndex=idx;
+    winnerImg.src=w.src;
+    winnerName.textContent=(w.name&&w.name.trim())?w.name.trim():'Player '+(idx+1);
+    modal.classList.remove('hidden');
+    confettiBurst();playFanfare();
+  }
+}
+
+spinBtn.addEventListener('click',spin);
+hub.addEventListener('click',spin);
+canvas.addEventListener('click',spin);
+winnerImg.parentElement.addEventListener('click',()=>openLightbox(currentWinnerIndex,true));
+
+/* ================= FULLSCREEN LIGHTBOX ================= */
+const MIN_SCALE=0.25, MAX_SCALE=10;
+let scale=1, tx=0, ty=0;
+let panning=false, startX=0, startY=0, startTx=0, startTy=0, moved=false;
+let lbSource={index:-1};
+
+function applyTransform(){
+  lbImg.style.transform=`translate(${tx}px,${ty}px) scale(${scale})`;
+  lbZoomLevel.textContent=Math.round(scale*100)+'%';
+}
+function animOn(){lbStage.classList.add('anim');}
+function animOff(){lbStage.classList.remove('anim');}
+function stageCenter(){
+  const r=lbStage.getBoundingClientRect();
+  return {x:r.left+r.width/2, y:r.top+r.height/2};
+}
+function zoomAt(clientX,clientY,factor){
+  const c=stageCenter();
+  const x=clientX-c.x, y=clientY-c.y;
+  const ns=Math.min(MAX_SCALE,Math.max(MIN_SCALE,scale*factor));
+  const k=ns/scale;
+  tx=x-(x-tx)*k;ty=y-(y-ty)*k;scale=ns;
+  applyTransform();
+}
+function zoomCentered(factor){const c=stageCenter();zoomAt(c.x,c.y,factor);}
+function resetView(){animOn();scale=1;tx=0;ty=0;applyTransform();}
+
+function openLightbox(index,isWinner=false){
+  if(index<0||!segments[index])return;
+  lbSource={index};
+  const seg=segments[index];
+  lbImg.src=seg.src;
+  lbName.textContent=(seg.name&&seg.name.trim())?seg.name.trim():'Player '+(index+1);
+  lbChange.style.display=isWinner?'none':'flex';
+  resetView();
+  lightbox.classList.remove('hidden');
+}
+function closeLightbox(){lightbox.classList.add('hidden');lbSource={index:-1};}
+
+lbClose.addEventListener('click',closeLightbox);
+lbZoomIn.addEventListener('click',()=>{animOn();zoomCentered(1.3);});
+lbZoomOut.addEventListener('click',()=>{animOn();zoomCentered(1/1.3);});
+lbReset.addEventListener('click',resetView);
+lbChange.addEventListener('click',()=>{editingIndex=lbSource.index;fileInput.click();});
+
+lbStage.addEventListener('wheel',e=>{
+  e.preventDefault();animOff();
+  zoomAt(e.clientX,e.clientY,e.deltaY<0?1.15:1/1.15);
+},{passive:false});
+
+lbStage.addEventListener('mousedown',e=>{
+  if(e.button!==0)return;
+  panning=true;moved=false;animOff();
+  startX=e.clientX;startY=e.clientY;startTx=tx;startTy=ty;
+  lbStage.classList.add('panning');
+});
+window.addEventListener('mousemove',e=>{
+  if(!panning)return;
+  const dx=e.clientX-startX, dy=e.clientY-startY;
+  if(Math.abs(dx)>3||Math.abs(dy)>3)moved=true;
+  tx=startTx+dx;ty=startTy+dy;applyTransform();
+});
+window.addEventListener('mouseup',()=>{panning=false;lbStage.classList.remove('panning');});
+
+lbStage.addEventListener('dblclick',e=>{
+  e.preventDefault();animOn();
+  if(scale>1.5)resetView();
+  else zoomAt(e.clientX,e.clientY,2.6/scale);
+});
+
+let touchMode=null, lastDist=0, tStart={x:0,y:0}, tStartTx=0, tStartTy=0;
+lbStage.addEventListener('touchstart',e=>{
+  animOff();
+  if(e.touches.length===1){
+    touchMode='pan';moved=false;
+    tStart={x:e.touches[0].clientX,y:e.touches[0].clientY};
+    tStartTx=tx;tStartTy=ty;
+  }else if(e.touches.length===2){
+    touchMode='pinch';
+    lastDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+  }
+},{passive:true});
+lbStage.addEventListener('touchmove',e=>{
   e.preventDefault();
-  if (e.deltaY < 0) zoomLevel = Math.min(8, zoomLevel + 0.3); else zoomLevel = Math.max(0.5, zoomLevel - 0.3);
-  if (zoomLevel === 1) { zoomPanX = 0; zoomPanY = 0; } applyZoom();
-}, { passive: false });
-document.addEventListener('keydown', (e) => {
-  if (!document.getElementById('zoomViewer').classList.contains('show')) return;
-  if (e.key === 'Escape') closeZoom();
-  else if (e.key === '+' || e.key === '=') zoomIn();
-  else if (e.key === '-') zoomOut();
-  else if (e.key === 'r' || e.key === 'R') resetZoom();
-  else if (e.key === 'q' || e.key === 'Q') rotateZoom();
+  if(touchMode==='pan'&&e.touches.length===1){
+    const dx=e.touches[0].clientX-tStart.x, dy=e.touches[0].clientY-tStart.y;
+    if(Math.abs(dx)>3||Math.abs(dy)>3)moved=true;
+    tx=tStartTx+dx;ty=tStartTy+dy;applyTransform();
+  }else if(touchMode==='pinch'&&e.touches.length===2){
+    const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+    const mid={x:(e.touches[0].clientX+e.touches[1].clientX)/2,y:(e.touches[0].clientY+e.touches[1].clientY)/2};
+    if(lastDist>0)zoomAt(mid.x,mid.y,d/lastDist);
+    lastDist=d;
+  }
+},{passive:false});
+lbStage.addEventListener('touchend',()=>{touchMode=null;lastDist=0;});
+
+/* ================= KEYBOARD ================= */
+window.addEventListener('keydown',e=>{
+  if(!lightbox.classList.contains('hidden')){
+    if(e.key==='Escape'||e.code==='Space'){e.preventDefault();closeLightbox();}
+    else if(e.key==='+'||e.key==='='){animOn();zoomCentered(1.3);}
+    else if(e.key==='-'||e.key==='_'){animOn();zoomCentered(1/1.3);}
+    else if(e.key==='0'){resetView();}
+    return;
+  }
+  if(e.key==='Escape'&&!modal.classList.contains('hidden'))modal.classList.add('hidden');
+  if(e.code==='Space'&&document.activeElement.tagName!=='INPUT'){
+    e.preventDefault();
+    if(modal.classList.contains('hidden'))spin();else modal.classList.add('hidden');
+  }
 });
-function renderSegmentList() {
-  const list = document.getElementById('segmentList'); list.innerHTML = '';
-  segments.forEach((seg, i) => {
-    const card = document.createElement('div'); card.className = 'segment-card';
-    const numBadge = document.createElement('div'); numBadge.className = 'seg-number'; numBadge.style.background = seg.color; numBadge.textContent = i + 1;
-    
-    const imgPreview = document.createElement('img');
-    imgPreview.className = 'seg-image-preview' + (seg.image ? '' : ' no-image');
-    if (seg.image) imgPreview.src = seg.image;
-    imgPreview.onclick = () => triggerUpload(i);
-    imgPreview.title = seg.image ? 'Click to change • Double-click to preview fullscreen' : 'Click to upload';
-    imgPreview.ondblclick = (e) => { e.stopPropagation(); if (seg.image) openZoom(seg.image); };
-    const info = document.createElement('div'); info.className = 'seg-info';
-    const labelInput = document.createElement('input'); labelInput.className = 'seg-label-input'; labelInput.type = 'text'; labelInput.value = seg.label; labelInput.placeholder = 'Label...'; labelInput.maxLength = 20;
-    labelInput.oninput = (e) => { segments[i].label = e.target.value || `Segment ${i+1}`; saveData(); drawWheel(); };
-    const emojiInput = document.createElement('input'); emojiInput.className = 'seg-label-input'; emojiInput.type = 'text'; emojiInput.value = seg.emoji || '⭐'; emojiInput.placeholder = 'Emoji'; emojiInput.maxLength = 2; emojiInput.style.width = '60px'; emojiInput.style.textAlign = 'center';
-    emojiInput.oninput = (e) => { segments[i].emoji = e.target.value || '⭐'; saveData(); drawWheel(); };
-    info.appendChild(labelInput); info.appendChild(emojiInput);
-    const actions = document.createElement('div'); actions.className = 'seg-actions';
-    const uploadBtn = document.createElement('button'); uploadBtn.className = 'icon-btn btn-upload'; uploadBtn.innerHTML = '📷'; uploadBtn.title = 'Upload image'; uploadBtn.onclick = () => triggerUpload(i);
-    
-    const colorBtn = document.createElement('button'); colorBtn.className = 'icon-btn btn-color'; colorBtn.innerHTML = '🎨'; colorBtn.title = 'Change color';
-    const colorInput = document.createElement('input'); colorInput.type = 'color'; colorInput.value = seg.color;
-    colorInput.oninput = (e) => { segments[i].color = e.target.value; segments[i].textColor = isLightColor(e.target.value) ? '#333' : '#fff'; saveData(); drawWheel(); renderSegmentList(); };
-    colorBtn.appendChild(colorInput);
-    const zoomBtn = document.createElement('button'); zoomBtn.className = 'icon-btn'; zoomBtn.innerHTML = '🔍'; zoomBtn.style.background = 'linear-gradient(135deg, #06b6d4, #4d96ff)'; zoomBtn.style.color = 'white'; zoomBtn.title = 'Fullscreen preview';
-    zoomBtn.onclick = () => { if (seg.image) openZoom(seg.image); else showToast('⚠️ Upload image first!'); };
-    const deleteBtn = document.createElement('button'); deleteBtn.className = 'icon-btn btn-delete'; deleteBtn.innerHTML = '🗑️'; deleteBtn.title = 'Delete segment';
-    deleteBtn.onclick = () => deleteSegment(i);
-    actions.append(uploadBtn, colorBtn, zoomBtn, deleteBtn);
-    card.append(numBadge, imgPreview, info, actions);
-    list.appendChild(card);
-  });
-  document.getElementById('addBtn').disabled = numSegments >= 12;
+
+modal.addEventListener('click',e=>{if(e.target===modal)modal.classList.add('hidden');});
+againBtn.addEventListener('click',()=>{modal.classList.add('hidden');spin();});
+removeBtn.addEventListener('click',()=>{
+  if(spinning)return;
+  if(currentWinnerIndex>-1){segments.splice(currentWinnerIndex,1);renderList();saveData();}
+  modal.classList.add('hidden');
+});
+
+/* ================= EXPORT SINGLE-FILE COPY ================= */
+exportBtn.addEventListener('click',()=>{
+  if(spinning)return;
+  if(!confirm('Download a copy of this wheel with photos & names saved inside the file?\n\n(Note: photos loaded from photo1.jpg–photo5.jpg stay as file links — keep the photos in the same folder as the exported file.)'))return;
+  const data=segments.map(s=>({name:s.name,src:s.src}));
+  const json=JSON.stringify(data).replace(/</g,'\\u003c');
+  const html=PAGE_SOURCE.replace(
+    /const PRELOADED_PHOTOS = \[[\s\S]*?\];/,
+    ()=>'const PRELOADED_PHOTOS = '+json+';'
+  );
+  const blob=new Blob([html],{type:'text/html'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='spin-wheel-forever.html';
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),3000);
+});
+
+/* ================= SOUND ================= */
+let audioCtx=null;
+function ensureAudio(){
+  if(!audioCtx){try{audioCtx=new (window.AudioContext||window.webkitAudioContext)();}catch(e){}}
+  if(audioCtx&&audioCtx.state==='suspended')audioCtx.resume();
 }
-function triggerUpload(index) { uploadTargetIndex = index; fileInput.click(); playClick(); }
-function addSegment() {
-  if (numSegments >= 12) { showToast('⚠️ Maximum 12 segments!'); return; }
-  const color = defaultColors[numSegments % defaultColors.length];
-  const emojis = ['😀', '🎈', '🎁', '🎨', '🎪', '🎲', '🎯', '🎺', '🎸', '🎮'];
-  segments.push({ label: `Segment ${numSegments + 1}`, color, textColor: isLightColor(color) ? '#333' : '#fff', image: null, emoji: emojis[numSegments % emojis.length] });
-  numSegments = segments.length; arcSize = (2 * Math.PI) / numSegments; loadedImages.push(null);
-  saveData(); drawWheel(); renderSegmentList(); showToast('✨ Segment added & saved!'); playSuccess();
+function note(freq,dur,type,vol,delay=0){
+  if(!soundOn||!audioCtx)return;
+  const t=audioCtx.currentTime+delay;
+  const o=audioCtx.createOscillator(),g=audioCtx.createGain();
+  o.type=type;o.frequency.value=freq;
+  g.gain.setValueAtTime(vol,t);
+  g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+  o.connect(g);g.connect(audioCtx.destination);o.start(t);o.stop(t+dur+0.02);
 }
-function deleteSegment(index) {
-  if (numSegments <= 2) { showToast('⚠️ Minimum 2 segments!'); return; }
-  if (!confirm(`Delete "${segments[index].label}"?`)) return;
-  segments.splice(index, 1); loadedImages.splice(index, 1);
-  numSegments = segments.length; arcSize = (2 * Math.PI) / numSegments;
-  saveData(); drawWheel(); renderSegmentList(); showToast('🗑️ Segment deleted!'); playTone(330, 0.2, 'sine', 0.15);
-}
-function isLightColor(hex) {
-  const num = parseInt(hex.replace('#', ''), 16);
-  return ((0.299 * ((num >> 16) & 0xFF)) + (0.587 * ((num >> 8) & 0xFF)) + (0.114 * (num & 0xFF))) / 255 > 0.6;
-}
-function addDots() {
-  const wrapper = document.getElementById('wheelWrapper'); wrapper.querySelectorAll('.dot').forEach(d => d.remove());
-  for (let i = 0; i < 24; i++) {
-    const angle = (i / 24) * 2 * Math.PI - Math.PI / 2;
-    const dot = document.createElement('div'); dot.className = 'dot';
-    dot.style.left = (225 + 225 * Math.cos(angle) - 7) + 'px';
-    dot.style.top = (225 + 225 * Math.sin(angle) - 7) + 'px';
-    dot.style.animationDelay = (i * 0.08) + 's'; wrapper.appendChild(dot);
+function playTick(){note(750+Math.random()*250,0.05,'square',0.045);}
+function playFanfare(){[523.25,659.25,783.99,1046.5].forEach((f,i)=>note(f,0.22,'triangle',0.14,i*0.14));note(1318.5,0.4,'triangle',0.12,0.56);}
+soundBtn.addEventListener('click',()=>{soundOn=!soundOn;soundBtn.textContent=soundOn?'🔊':'🔇';});
+
+/* ================= CONFETTI ================= */
+const CCOLORS=['#ff6b6b','#ffd43b','#51cf66','#4dabf7','#da77f2','#ffffff','#ffa94d'];
+let confs=[];
+function confettiBurst(n=190){
+  for(let i=0;i<n;i++){
+    confs.push({
+      x:innerWidth/2+(Math.random()-.5)*230, y:innerHeight*0.33,
+      vx:(Math.random()-.5)*14, vy:-Math.random()*13-4,
+      g:0.32+Math.random()*0.15, s:6+Math.random()*7,
+      rot:Math.random()*6.28, vr:(Math.random()-.5)*0.3,
+      c:CCOLORS[(Math.random()*CCOLORS.length)|0],
+      life:160+Math.random()*80, shape:Math.random()<0.3?'circle':'rect'
+    });
   }
 }
-function showToast(message) {
-  const toast = document.getElementById('toast'); toast.textContent = message; toast.classList.add('show');
-  setTimeout(() => toast.classList.remove('show'), 2500);
-}
-function createParticles() {
-  const container = document.getElementById('particles');
-  for (let i = 0; i < 50; i++) {
-    const p = document.createElement('div'); p.className = 'particle';
-    p.style.left = Math.random() * 100 + '%'; p.style.top = Math.random() * 100 + '%';
-    p.style.animationDelay = Math.random() * 3 + 's'; p.style.animationDuration = (2 + Math.random() * 3) + 's';
-    container.appendChild(p);
+function updateConfetti(){
+  cctx.clearRect(0,0,confettiCanvas.width,confettiCanvas.height);
+  confs=confs.filter(p=>p.life>0&&p.y<innerHeight+40);
+  for(const p of confs){
+    p.vy+=p.g;p.x+=p.vx;p.y+=p.vy;p.rot+=p.vr;p.life--;p.vx*=0.99;
+    cctx.save();cctx.translate(p.x,p.y);cctx.rotate(p.rot);
+    cctx.globalAlpha=Math.min(1,p.life/40);cctx.fillStyle=p.c;
+    if(p.shape==='rect')cctx.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);
+    else{cctx.beginPath();cctx.arc(0,0,p.s/2.4,0,6.28);cctx.fill();}
+    cctx.restore();
   }
 }
-function createFloatingEmojis() {
-  const container = document.getElementById('floatingEmojis');
-  const emojis = ['🎈', '🎉', '⭐', '✨', '🌟', '💫', '🎊', '🎀', '🎵', '🎶', '💖', '🌈', '🎁'];
-  for (let i = 0; i < 20; i++) {
-    const emoji = document.createElement('div'); emoji.className = 'floating-emoji';
-    emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-    emoji.style.left = Math.random() * 100 + '%'; emoji.style.fontSize = (1.5 + Math.random() * 2) + 'rem';
-    emoji.style.animationDuration = (10 + Math.random() * 15) + 's'; emoji.style.animationDelay = (Math.random() * 15) + 's';
-    container.appendChild(emoji);
-  }
+
+/* ================= BACKGROUND BUBBLES ================= */
+for(let i=0;i<14;i++){
+  const b=document.createElement('div');b.className='bubble';
+  const s=30+Math.random()*90;
+  b.style.width=b.style.height=s+'px';
+  b.style.left=Math.random()*100+'vw';
+  b.style.animationDuration=(9+Math.random()*14)+'s';
+  b.style.animationDelay=(-Math.random()*20)+'s';
+  b.style.opacity=0.06+Math.random()*0.1;
+  document.body.appendChild(b);
 }
-function createGeoShapes() {
-  const container = document.getElementById('geoShapes');
-  for (let i = 0; i < 8; i++) {
-    const shape = document.createElement('div'); shape.className = 'geo-shape';
-    const size = 50 + Math.random() * 100;
-    shape.style.width = size + 'px'; shape.style.height = size + 'px';
-    shape.style.left = Math.random() * 100 + '%'; shape.style.top = Math.random() * 100 + '%';
-    shape.style.borderRadius = Math.random() > 0.5 ? '50%' : (Math.random() > 0.5 ? '30%' : '0');
-    shape.style.animationDuration = (15 + Math.random() * 20) + 's'; shape.style.animationDelay = (Math.random() * 10) + 's';
-    container.appendChild(shape);
-  }
-}
-// Initialize
-loadData(); // LOAD SAVED DATA FIRST
-drawWheel();
-renderSegmentList();
-addDots(); createParticles(); createFloatingEmojis(); createGeoShapes();
-document.addEventListener('click', () => { initAudio(); }, { once: true });
+
+/* ================= MAIN LOOP ================= */
+function loop(time){drawWheel(time);updateConfetti();requestAnimationFrame(loop);}
+resizeAll();renderList();requestAnimationFrame(loop);
 </script>
 </body>
 </html>
